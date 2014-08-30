@@ -24,7 +24,7 @@ namespace tbsserver.Controllers
             var player2 = new Player ("Andreas");
             var game = new Game (player1);
             game.AddPlayer (player2);
-            var commander = new UnitType ("Commander", 20, 2, 100);
+            var commander = new UnitType ("Commander", 20, 2, 100, 5);
             game.AddUnit (player1, commander, 10, 10);
             game.AddUnit (player2, commander, -10, -10);
             game.Start ();

@@ -47,6 +47,12 @@ namespace tbsserver
 			unit.Game = this;
 		}
 
+        public void MoveUnit(Unit unit, int positionX, int positionY)
+        {
+            unit.Move(positionX, positionY);
+        }
+
+
 	}
 }
 
