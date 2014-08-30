@@ -19,19 +19,6 @@ namespace tbsserver.Controllers
 			ViewData ["Version"] = mvcName.Version.Major;
 			ViewData ["Runtime"] = isMono ? "Mono" : ".NET";
 
-            Console.WriteLine ("lol");
-            var player1 = new Player ("Thomas");
-            var player2 = new Player ("Andreas");
-            var game = new Game (player1);
-            game.AddPlayer (player2);
-            var commander = new UnitType ("Commander", 20, 2, 100, 5);
-            game.AddUnit (player1, commander, 10, 10);
-            game.AddUnit (player2, commander, -10, -10);
-            game.Start ();
-            this.game = game;
-
-            ViewData["Player1Name"] = game.Players[0].Name;
-
 			return View ();
 		}
 	}

@@ -14,15 +14,22 @@ namespace tbsserver
         public double AttackSpeed{ get; set; }
 
         public double HitPoints{ get; set; }
-        public int Energy{ get; set; }
 
-        public UnitType(string name, double damage, double attackSpeed, double hitPoints, int energy)
+        public int Energy { get; set; }
+
+        public int Attacks { get; set; }
+
+        public int EnergyPerAttack { get; set; }
+
+        public UnitType(string name, double damage, double attackSpeed, double hitPoints, int energy, int attacks, int energyPerAttack)
         {
             this.Name = name;
             this.Damage = damage;
             this.AttackSpeed = attackSpeed;
             this.HitPoints = hitPoints;
             this.Energy = energy;
+            this.Attacks = attacks;
+            this.EnergyPerAttack = energyPerAttack;
         }
 
     }

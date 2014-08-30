@@ -9,7 +9,7 @@ namespace tbsserver.Tests
     {
         private Game game;
 
-        [TestFixtureSetUp] 
+        [SetUp] 
         public void Init()
         {
             Console.WriteLine("lol");
@@ -17,7 +17,7 @@ namespace tbsserver.Tests
             var player2 = new Player("Andreas");
             var game = new Game(player1);
             game.AddPlayer(player2);
-            var commander = new UnitType("Commander", damage: 20, attackSpeed: 2, hitPoints: 100, energy: 5);
+            var commander = new UnitType(name: "Commander", damage: 20, attackSpeed: 2, hitPoints: 100, energy: 5, attacks: 1, energyPerAttack: 4);
             game.AddUnit(player1, commander, 10, 10);
             game.AddUnit(player2, commander, -10, -10);
             game.Start();
@@ -51,6 +51,28 @@ namespace tbsserver.Tests
         }
 
 
+        [Test()]
+        public void IsUnitAttacked()
+        {
+            var attacker = game.Units[0];
+            var defender = game.Units[1];
+            Assert.AreEqual(100, defender.CurrentHitpoints);
+            Assert.AreEqual(1, attacker.AttacksLeft);
+            Assert.AreEqual(5, attacker.CurrentEnergy);
+            game.OrderUnitToAttack(attacker, defender);
+            Assert.AreEqual(60, defender.CurrentHitpoints);
+            Assert.AreEqual(0, attacker.AttacksLeft);
+            Assert.AreEqual(5, attacker.CurrentEnergy);
+            game.OrderUnitToAttack(attacker, defender);
+            Assert.AreEqual(20, defender.CurrentHitpoints);
+            Assert.AreEqual(0, attacker.AttacksLeft);
+            Assert.AreEqual(1, attacker.CurrentEnergy);
+        }
 
+        [Test()]
+        public void TestIfTurnHasEnded()
+        {
+            //TODO: Write test
+        }
     }
 }

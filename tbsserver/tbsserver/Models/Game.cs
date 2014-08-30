@@ -47,11 +47,38 @@ namespace tbsserver
 			unit.Game = this;
 		}
 
+        public void EndTurn()
+        {
+            CurrentTurn++;
+            UpdateCurrentPlayer();
+            ReadyUnitsForPlayer(CurrentPlayer);
+        }
+
+        private void UpdateCurrentPlayer()
+        {
+            var player1 = Players[0];
+            var player2 = Players[1];
+            CurrentPlayer = CurrentPlayer == player1 ? player2 : player1;
+        }
+
+        private void ReadyUnitsForPlayer(Player player)
+        {
+            foreach (var unit in player.Units)
+            {
+                unit.ReplenishEnergy();
+                unit.ReplenishAttacks();
+            }
+        }
+
         public void MoveUnit(Unit unit, int positionX, int positionY)
         {
             unit.Move(positionX, positionY);
         }
 
+        public void OrderUnitToAttack(Unit attackingUnit, Unit targetUnit)
+        {
+            attackingUnit.Attack(targetUnit);
+        }
 
 	}
 }

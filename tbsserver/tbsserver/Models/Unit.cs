@@ -13,12 +13,14 @@ namespace tbsserver
 		public int PositionY{ get; set; }
 		public double CurrentHitpoints{ get; set; }
         public int CurrentEnergy{ get; set; }
+        public int AttacksLeft { get; set; }
 
 		public Unit(UnitType unitType, int positionX, int positionY)
 		{
 			this.UnitType = unitType;
-			this.CurrentHitpoints = UnitType.HitPoints;
+            this.CurrentHitpoints = UnitType.HitPoints;
             this.CurrentEnergy = UnitType.Energy;
+            this.AttacksLeft = UnitType.Attacks;
 			this.PositionX = positionX;
 			this.PositionY = positionY;
 		}
@@ -36,6 +38,36 @@ namespace tbsserver
             var deltaY = this.PositionY - positionY;
             var energySpent = Math.Abs(deltaX) + Math.Abs(deltaY);
             CurrentEnergy -= energySpent;
+        }
+
+        public void Attack(Unit unit)
+        {
+            var damage = CalculateDamage();
+            unit.CurrentHitpoints -= damage;
+            if (AttacksLeft > 0)
+            {
+                AttacksLeft--;
+            }
+            else
+            {
+                CurrentEnergy -= UnitType.EnergyPerAttack;
+            }
+        }
+
+        public double CalculateDamage ()
+        {
+            var damage = UnitType.AttackSpeed * UnitType.Damage;
+            return damage;
+        }
+
+        public void ReplenishEnergy()
+        {
+            CurrentEnergy = UnitType.Energy;
+        }
+
+        public void ReplenishAttacks()
+        {
+            AttacksLeft = UnitType.Attacks;
         }
 	}
 
