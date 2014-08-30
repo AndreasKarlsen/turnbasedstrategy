@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tbsserver", "tbsserver\tbsserver.csproj", "{9B6756B5-FB9D-4A09-B9B3-C48061B48868}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tbsserver.Tests", "tbsserver.Tests\tbsserver.Tests.csproj", "{F8DC454E-141A-45A1-9795-CAD2BAE23E66}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B6756B5-FB9D-4A09-B9B3-C48061B48868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B6756B5-FB9D-4A09-B9B3-C48061B48868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B6756B5-FB9D-4A09-B9B3-C48061B48868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B6756B5-FB9D-4A09-B9B3-C48061B48868}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8DC454E-141A-45A1-9795-CAD2BAE23E66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8DC454E-141A-45A1-9795-CAD2BAE23E66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8DC454E-141A-45A1-9795-CAD2BAE23E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8DC454E-141A-45A1-9795-CAD2BAE23E66}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = tbsserver\tbsserver.csproj
+	EndGlobalSection
+EndGlobal
