@@ -17,7 +17,7 @@ namespace tbsserver.Tests
             var player2 = new Player("Andreas");
             var game = new Game(player1);
             game.AddPlayer(player2);
-            var commander = new UnitType("Commander", 20, 2, 100, energy: 5);
+            var commander = new UnitType("Commander", damage: 20, attackSpeed: 2, hitPoints: 100, energy: 5);
             game.AddUnit(player1, commander, 10, 10);
             game.AddUnit(player2, commander, -10, -10);
             game.Start();
@@ -27,19 +27,19 @@ namespace tbsserver.Tests
         [Test()]
         public void IsGameStarted()
         {
-            Assert.AreEqual(game.CurrentTurn, 0);
+            Assert.AreEqual(0, game.CurrentTurn);
             Assert.NotNull(game.CurrentPlayer);
         }
 
         [Test()]
         public void IsUnitsAdded()
         {
-            Assert.AreEqual(game.Units.Count, 2);
-            Assert.AreEqual(game.Players.Count, 2);
-            Assert.AreEqual(game.Players[0].Units.Count, 1);
-            Assert.AreEqual(game.Players[1].Units.Count, 1);
-            Assert.AreEqual(game.Players[0].Units[0].UnitType.Name, "Commander");
-            Assert.AreEqual(game.Players[1].Units[0].UnitType.Name, "Commander");
+            Assert.AreEqual(2, game.Units.Count);
+            Assert.AreEqual(2, game.Players.Count);
+            Assert.AreEqual(1, game.Players[0].Units.Count);
+            Assert.AreEqual(1, game.Players[1].Units.Count);
+            Assert.AreEqual("Commander", game.Players[0].Units[0].UnitType.Name);
+            Assert.AreEqual("Commander", game.Players[1].Units[0].UnitType.Name);
         }
 
         [Test()]
