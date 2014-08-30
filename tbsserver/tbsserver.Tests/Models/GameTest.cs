@@ -36,9 +36,7 @@ namespace tbsserver.Tests
 			Assert.AreEqual (game.Units.Count, 2);
 			Assert.AreEqual (game.Players.Count, 2);
 			Assert.AreEqual (game.Players [0].Units.Count, 1);
-			Assert.AreEqual(game.Players[1].Units.Count, 1);
-			Assert.AreEqual(game.Players[0].Units[0].UnitType.Name, "Commander");
-			Assert.AreEqual(game.Players[1].Units[0].UnitType.Name, "Commander");
+			Assert.AreEqual (game.Players [1].Units.Count, 1);
 		}
 
 

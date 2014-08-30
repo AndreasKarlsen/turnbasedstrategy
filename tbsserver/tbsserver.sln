@@ -20,9 +20,6 @@ Global
 		{F8DC454E-141A-45A1-9795-CAD2BAE23E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8DC454E-141A-45A1-9795-CAD2BAE23E66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = tbsserver\tbsserver.csproj
 	EndGlobalSection
