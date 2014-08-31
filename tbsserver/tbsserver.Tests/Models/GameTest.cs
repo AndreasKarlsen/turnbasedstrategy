@@ -72,7 +72,29 @@ namespace tbsserver.Tests
         [Test()]
         public void TestIfTurnHasEnded()
         {
-            //TODO: Write test
+            var attacker = game.CurrentPlayer.Units[0];
+            var defender = game.Players.First(p=>p != game.CurrentPlayer).Units[0];
+            Assert.AreEqual(100, defender.CurrentHitpoints);
+            Assert.AreEqual(1, attacker.AttacksLeft);
+            Assert.AreEqual(5, attacker.CurrentEnergy);
+            game.OrderUnitToAttack(attacker, defender);
+            Assert.AreEqual(60, defender.CurrentHitpoints);
+            Assert.AreEqual(0, attacker.AttacksLeft);
+            Assert.AreEqual(5, attacker.CurrentEnergy);
+            game.OrderUnitToAttack(attacker, defender);
+            Assert.AreEqual(20, defender.CurrentHitpoints);
+            Assert.AreEqual(0, attacker.AttacksLeft);
+            Assert.AreEqual(1, attacker.CurrentEnergy);
+
+            game.EndTurn();
+            Assert.AreEqual(1, game.CurrentTurn);
+            Assert.AreEqual(false, (game.CurrentPlayer == attacker.Player));
+
+            game.EndTurn();
+            Assert.AreEqual(2, game.CurrentTurn);
+            Assert.AreEqual(true, (game.CurrentPlayer == attacker.Player));
+            Assert.AreEqual(1, attacker.AttacksLeft);
+            Assert.AreEqual(5, attacker.CurrentEnergy);
         }
     }
 }
