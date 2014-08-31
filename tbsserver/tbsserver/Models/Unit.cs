@@ -40,6 +40,33 @@ namespace tbsserver
             CurrentEnergy -= energySpent;
         }
 
+        public bool CanAttack(Unit unit)
+        {
+            var canAttack = false;
+            
+            if (
+                (
+                    this.PositionX == unit.PositionX &&
+                    (
+                        this.PositionY == unit.PositionY - 1 ||
+                        this.PositionY == unit.PositionY + 1
+                    )
+                ) ||
+                (
+                    this.PositionY == unit.PositionY &&
+                    (
+                        this.PositionX == unit.PositionX - 1 ||
+                        this.PositionX == unit.PositionX + 1
+                    )
+                )
+            )
+            {
+                canAttack = true;
+            }
+
+            return canAttack;
+        }
+
         public void Attack(Unit unit)
         {
             var damage = CalculateDamage();

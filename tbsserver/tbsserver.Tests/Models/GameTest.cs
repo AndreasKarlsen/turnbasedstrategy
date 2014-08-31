@@ -54,15 +54,22 @@ namespace tbsserver.Tests
         [Test()]
         public void IsUnitAttacked()
         {
-            var attacker = game.Units[0];
-            var defender = game.Units[1];
+            var attacker = game.CurrentPlayer.Units[0];
+            var defender = game.Players.First(p => p != game.CurrentPlayer).Units[0];
             Assert.AreEqual(100, defender.CurrentHitpoints);
             Assert.AreEqual(1, attacker.AttacksLeft);
             Assert.AreEqual(5, attacker.CurrentEnergy);
+            Assert.AreEqual(false, attacker.CanAttack(defender));
+
+            attacker.PositionX = defender.PositionX;
+            attacker.PositionY = defender.PositionY - 1;
+            Assert.AreEqual(true, attacker.CanAttack(defender));
+
             game.OrderUnitToAttack(attacker, defender);
             Assert.AreEqual(60, defender.CurrentHitpoints);
             Assert.AreEqual(0, attacker.AttacksLeft);
             Assert.AreEqual(5, attacker.CurrentEnergy);
+
             game.OrderUnitToAttack(attacker, defender);
             Assert.AreEqual(20, defender.CurrentHitpoints);
             Assert.AreEqual(0, attacker.AttacksLeft);
@@ -73,14 +80,21 @@ namespace tbsserver.Tests
         public void TestIfTurnHasEnded()
         {
             var attacker = game.CurrentPlayer.Units[0];
-            var defender = game.Players.First(p=>p != game.CurrentPlayer).Units[0];
+            var defender = game.Players.First(p => p != game.CurrentPlayer).Units[0];
             Assert.AreEqual(100, defender.CurrentHitpoints);
             Assert.AreEqual(1, attacker.AttacksLeft);
             Assert.AreEqual(5, attacker.CurrentEnergy);
+            Assert.AreEqual(false, attacker.CanAttack(defender));
+
+            attacker.PositionX = defender.PositionX;
+            attacker.PositionY = defender.PositionY - 1;
+            Assert.AreEqual(true, attacker.CanAttack(defender));
+
             game.OrderUnitToAttack(attacker, defender);
             Assert.AreEqual(60, defender.CurrentHitpoints);
             Assert.AreEqual(0, attacker.AttacksLeft);
             Assert.AreEqual(5, attacker.CurrentEnergy);
+
             game.OrderUnitToAttack(attacker, defender);
             Assert.AreEqual(20, defender.CurrentHitpoints);
             Assert.AreEqual(0, attacker.AttacksLeft);
