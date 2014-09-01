@@ -18,6 +18,7 @@
     width: 85%;
     background-color: #44CCff;
     position: relative;
+    overflow: hidden;
 }
 .unit
 {
@@ -25,4 +26,19 @@
     height: 30px;
     width: 30px;
     background-color: #FF0000;
+}
+.unit.selected
+{
+    opacity: 0.5;
+}
+.tile
+{
+    position: absolute;
+    height: 30px;
+    width: 30px;
+    background-color: #44CCff;
+}
+.tile.can-be-moved-to
+{
+    background-color: #33AADD;
 }
