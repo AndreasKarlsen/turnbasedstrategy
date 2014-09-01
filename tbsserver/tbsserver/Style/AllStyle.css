@@ -31,6 +31,10 @@
 {
     opacity: 0.5;
 }
+.unit.can-be-attacked
+{
+    background-color: #ff6a00;
+}
 .tile
 {
     position: absolute;

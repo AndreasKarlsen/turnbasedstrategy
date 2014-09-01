@@ -88,6 +88,8 @@
     <Compile Include="Models\UnitType.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\Classes\ProgressBar.js" />
+    <Content Include="Scripts\Enums\ProgressBar.js" />
     <Content Include="Scripts\External\jquery-2.1.0.min.js" />
     <Content Include="Scripts\GameLogic.js" />
     <Content Include="Style\AllStyle.css" />

@@ -1,7 +1,7 @@
 ﻿var jqGameArea;
 
-var LEVEL_WIDTH = 40;
-var LEVEL_HEIGHT = 40;
+var LEVEL_WIDTH = 30;
+var LEVEL_HEIGHT = 30;
 var GAME_AREA_WIDTH;
 var GAME_AREA_HEIGHT;
 var TILE_PIXEL_WIDTH = 30;
@@ -31,10 +31,11 @@ var initEvents = function () {
 };
 
 var initGame = function () {
+    _game.setUpLevel(currentGame);
     var host = _player.new("Thomas");
     var opponent = _player.new("Andreas");
     var commander = _unitType.new("Commander", 20, 2, 100, 5, 1, 4);
-    var unit1 = _unit.new(host, commander, 30, 30);
+    var unit1 = _unit.new(host, commander, 18, 10);
     var unit2 = _unit.new(opponent, commander, 10, 10);
     host.units = [unit1];
     opponent.units = [unit2];
@@ -45,7 +46,6 @@ var initGame = function () {
     };
     currentGame = newGame;
     _game.start(currentGame);
-    _game.setUpLevel(currentGame);
 };
 
 var _game = {
@@ -57,24 +57,6 @@ var _game = {
     setUpLevel: function (game) {
         jqGameArea.empty();
         _ui.createTiles();
-        for (var playerIndex in game.players) {
-            var player = game.players[playerIndex];
-            for (var unitIndex in player.units) {
-                var unit = player.units[unitIndex];
-                var jqUnit = $('<div class="unit">');
-                jqUnit.attr('unit-id', unit.id);
-                unit.jqElement = jqUnit;
-                _ui.updatePositionForUnit(unit);
-                jqGameArea.append(jqUnit);
-                jqUnit.click(function () {
-                    var selectedUnit = _ui.getUnitFromJqElement($(this));
-                    if (selectedUnit.player == currentGame.currentPlayer) {
-                        _ui.selectUnit(selectedUnit);
-                        _ui.showMovementForSelectedUnit();
-                    }
-                });
-            }
-        }
     },
     getUnitWithID: function (id) {
         var selectedUnit;
@@ -86,11 +68,24 @@ var _game = {
         }
         return selectedUnit;
     },
+    getDistanceBetweenUnits: function (unit1, unit2) {
+        return Math.abs(unit1.positionX - unit2.positionX) + Math.abs(unit1.positionY - unit2.positionY);
+    },
     moveUnit: function (unit, x, y) {
         unit.currentEnergy -= Math.abs(unit.positionX - x) + Math.abs(unit.positionY - y);
         unit.positionX = x;
         unit.positionY = y;
         _ui.updatePositionForUnit(unit);
+    },
+    orderUnitToAttack: function (attackingUnit, attackedUnit) {
+        var totalDamage = _unit.calculateDamage(attackingUnit);
+        attackedUnit.currentHitPoints -= totalDamage;
+        _ui.updateHitPointBar(attackedUnit);
+        if (attackingUnit.currentAttacks > 0) {
+            attackingUnit.currentAttacks--;
+        } else {
+            attackingUnit.currentEnergy -= attackingUnit.unitType.energyPerAttack;
+        }
     },
     endTurn: function () {
         currentGame.currentTurn++;
@@ -107,10 +102,13 @@ var _player = {
             name: name
         }
     },
-    updateCurrentPlayer: function () {
+    getOtherPlayer: function () {
         var player1 = currentGame.players[0];
         var player2 = currentGame.players[1];
-        currentGame.currentPlayer = currentGame.currentPlayer == player1 ? player2 : player1;
+        return currentGame.currentPlayer == player1 ? player2 : player1;
+    },
+    updateCurrentPlayer: function () {
+        currentGame.currentPlayer = _player.getOtherPlayer();
     },
     readyUnitsForPlayer: function (player) {
         for (var unitIndex in player.units) {
@@ -137,9 +135,31 @@ var _unitType = {
 
 var _unit = {
     new: function (player, unitType, positionX, positionY) {
-        nextUnitID++;
-        return {
-            id: nextUnitID - 1,
+        var jqUnit = $('<div class="unit">');
+        jqUnit.attr('unit-id', nextUnitID);
+        jqUnit.click(function () {
+            var selectedUnit = _ui.getUnitFromJqElement($(this));
+            if (selectedUnit.player == currentGame.currentPlayer) {
+                _ui.selectUnit(selectedUnit);
+                _ui.showMovementForSelectedUnit();
+            }
+        });
+        jqUnit.on("contextmenu", function (event) {
+            _ui.handleRightClickOnUnit(event, $(this));
+            return false;
+        });
+
+        var hitPointBar = _progressBar.newHPBar(
+            {
+                height: '5px',
+                maxValue: unitType.hitPoints
+            }
+        );
+
+        var returnUnit = {
+            jqElement: jqUnit,
+            hitPointBar: hitPointBar,
+            id: nextUnitID,
             player: player,
             unitType: unitType,
             positionX: positionX,
@@ -148,12 +168,28 @@ var _unit = {
             currentEnergy: unitType.energy,
             currentAttacks: unitType.attacks
         };
+
+        _ui.updatePositionForUnit(returnUnit);
+        jqGameArea.append(jqUnit);
+
+        var jqBar = hitPointBar.jqElement;
+        returnUnit.jqElement.append(jqBar);
+
+        nextUnitID++;
+        return returnUnit;
+    },
+    canAttack: function (unit) {
+        return (unit.currentAttacks > 0 || unit.currentEnergy >= unit.unitType.energyPerAttack);
     },
     replenishEnergyForUnit: function (unit) {
         unit.currentEnergy = unit.unitType.energy;
     },
     replenishAttacksForUnit: function (unit) {
         unit.currentAttacks = unit.unitType.attacks;
+    },
+    calculateDamage: function (unit) {
+        var totalDamage = unit.unitType.damage * unit.unitType.attackSpeed;
+        return totalDamage;
     }
 };
 
@@ -168,6 +204,7 @@ var _ui = {
     deselectUnits: function () {
         $('.unit.selected').removeClass('selected');
         $('.tile.can-be-moved-to').removeClass('can-be-moved-to');
+        $('.unit.can-be-attacked').removeClass('can-be-attacked');
     },
     selectUnit: function (unit) {
         _ui.deselectUnits();
@@ -194,6 +231,18 @@ var _ui = {
             _ui.showMovementForSelectedUnit();
         }
     },
+    handleRightClickOnUnit: function (event, jqUnit) {
+        var selectedUnit = _ui.getSelectedUnit();
+        if (selectedUnit !== undefined) {
+            if (jqUnit.hasClass('can-be-attacked')) {
+                var attackedUnit = _ui.getUnitFromJqElement(jqUnit);
+                _game.orderUnitToAttack(selectedUnit, attackedUnit);
+            } else {
+                _ui.deselectUnits();
+            }
+            _ui.showMovementForSelectedUnit();
+        }
+    },
     ingameXToPixels: function (val) {
         return TILE_PIXEL_WIDTH * val;
     },
@@ -205,6 +254,16 @@ var _ui = {
     },
     pixelsToIngameY: function (val) {
         return Math.floor(val / TILE_PIXEL_HEIGHT);
+    },
+    isUnitOnTile: function (unit, tile) {
+        if (
+            unit.positionX == tile.positionX &&
+            unit.positionY == tile.positionY
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     },
     createTiles: function () {
         tiles = [];
@@ -236,7 +295,8 @@ var _ui = {
         }
     },
     showMovementForSelectedUnit: function () {
-        $('.tile').removeClass('can-be-moved-to');
+        $('.tile.can-be-moved-to').removeClass('can-be-moved-to');
+        $('.unit.can-be-attacked').removeClass('can-be-attacked');
         var unit = _ui.getSelectedUnit();
         if (unit !== undefined) {
             var minY = unit.positionY - unit.currentEnergy > 0 ? unit.positionY - unit.currentEnergy : 0;
@@ -245,17 +305,33 @@ var _ui = {
             var maxX = unit.positionX + unit.currentEnergy < LEVEL_WIDTH ? unit.positionX + unit.currentEnergy : LEVEL_WIDTH - 1;
             for (var y = minY; y <= maxY; y++) {
                 for (var x = minX; x <= maxX; x++) {
-                    if (
-                        Math.abs(unit.positionX - x) + Math.abs(unit.positionY - y) <= unit.currentEnergy &&
-                        (
-                            unit.positionX != x ||
-                            unit.positionY != y
-                        )
-                    ) {
-                        tiles[x][y].jqElement.addClass('can-be-moved-to');
+                    // Has enough energy
+                    if (Math.abs(unit.positionX - x) + Math.abs(unit.positionY - y) <= unit.currentEnergy) {
+                        var isOcccupied = false;
+                        for (var unitIndex in currentGame.units) {
+                            var playerUnit = currentGame.units[unitIndex];
+                            if (_ui.isUnitOnTile(playerUnit, tiles[x][y])) {
+                                isOcccupied = true;
+                            }
+                        }
+                        if (!isOcccupied) {
+                            tiles[x][y].jqElement.addClass('can-be-moved-to');
+                        }
                     }
                 }
             }
+            for (var unitIndex in _player.getOtherPlayer().units) {
+                var playerUnit = _player.getOtherPlayer().units[unitIndex];
+                if (
+                    _game.getDistanceBetweenUnits(unit, playerUnit) == 1 &&
+                    _unit.canAttack(unit)
+                ) {
+                    playerUnit.jqElement.addClass('can-be-attacked');
+                }
+            }
         }
+    },
+    updateHitPointBar: function (unit) {
+        _progressBar.setValue(unit.hitPointBar, unit.currentHitPoints);
     }
 };
